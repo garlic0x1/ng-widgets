@@ -37,7 +37,7 @@
     (destroy (inspector-view self)))
   (setf (text (crumbs self))
         (format nil " ~{ > ~a~}"
-                (reverse (mapcar #'type-of (inspector-stack self))))
+                (reverse (mapcar #'class-of-simple (inspector-stack self))))
         (inspector-view self)
         (make-instance (inspector-view-class value)
                        :value value
@@ -104,7 +104,7 @@
     :initarg :value
     :accessor inspector-list-view-value))
   ((list-view listbox* :pack (:fill :both :expand t)
-              :items (str:lines (inspector-list-view-value self)))))
+              :items (str:lines (format nil "~a" (inspector-list-view-value self))))))
 
 ;;
 ;; Dispatch view on value type

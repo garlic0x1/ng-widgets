@@ -19,3 +19,12 @@
   (loop :for name :in (slot-names obj)
         :for val :in (slot-values obj)
         :collect (cons name val)))
+
+(defun type-of-simple (obj)
+  (let ((type (type-of obj)))
+    (if (listp type)
+        (car type)
+        type)))
+
+(defun class-of-simple (obj)
+  (class-name (class-of obj)))
