@@ -6,4 +6,6 @@
                 :components ((:file "package")
                              (:file "utils")
                              (:file "listbox")
-                             (:file "inspector")))))
+                             (:file "prompt")
+                             (:file "inspector")
+                             ))))

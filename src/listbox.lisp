@@ -54,3 +54,7 @@
 
 (defun listbox*-value (widget)
   (listbox*-get widget (car (listbox-get-selection widget))))
+
+(defun listbox*-delete-all (widget)
+  (listbox-delete widget 0 (listbox-size widget))
+  (setf (listbox*-items widget) (make-array 128 :fill-pointer 0 :adjustable t)))
