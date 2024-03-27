@@ -8,7 +8,13 @@
    :listbox*-insert
    :listbox*-push
    :listbox*-value
+   :listbox*-delete-all
    ;; inspector.lisp
    :inspector
+   :inspector-value
    :inspector-swap
-   ))
+   ;; prompt.lisp
+   :prompt
+   :prompt-value
+   :prompt-swap
+   :file-prompt))

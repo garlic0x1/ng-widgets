@@ -7,5 +7,4 @@
                              (:file "utils")
                              (:file "listbox")
                              (:file "prompt")
-                             (:file "inspector")
-                             ))))
+                             (:file "inspector")))))

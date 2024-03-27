@@ -49,6 +49,9 @@
         (inspector-stack self) '())
   (inspector-push self value))
 
+(defun inspector-value (self)
+  (car (inspector-stack self)))
+
 ;;
 ;; View widgets per type.
 ;;
