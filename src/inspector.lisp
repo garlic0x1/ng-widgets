@@ -17,6 +17,7 @@
                :command (curry 'inspector-pop self))
    (crumbs label
            :grid '(0 0 :sticky "w")))
+
   (grid-columnconfigure self 0 :weight 1)
   (grid-columnconfigure self 1 :weight 1)
   (grid-rowconfigure self 0 :minsize 32)
@@ -40,9 +41,9 @@
                 (reverse (mapcar #'class-of-simple (inspector-stack self))))
         (inspector-view self)
         (make-instance (inspector-view-class value)
+                       :grid '(1 0 :columnspan 2 :sticky "nsew")
                        :value value
-                       :master self
-                       :grid '(1 0 :columnspan 2 :sticky "nsew"))))
+                       :master self)))
 
 (defun inspector-swap (self value)
   (setf (inspector-init-value self) value
@@ -80,6 +81,7 @@
               :command (lambda (items)
                          (when-let ((item (car items)))
                            (inspector-push (master self) item)))))
+
   (let ((value (inspector-list-view-value self)))
     (listbox*-push list-view (if (listp (cdr value))
                                  value
@@ -106,8 +108,11 @@
   ((value
     :initarg :value
     :accessor inspector-list-view-value))
-  ((list-view listbox* :pack (:fill :both :expand t)
-              :items (str:lines (format nil "~a" (inspector-list-view-value self))))))
+  ((list-view listbox*
+              :pack (:fill :both :expand t)
+              :items (str:lines
+                      (format nil "~a"
+                              (inspector-list-view-value self))))))
 
 ;;
 ;; Dispatch view on value type

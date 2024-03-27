@@ -21,7 +21,9 @@
     :initform nil
     :accessor listbox*-double-click))
   ()
+
   (listbox*-push self (listbox*-init-items self))
+
   (if (listbox*-double-click self)
       (bind self "<Double-1>"
         (lambda (e)

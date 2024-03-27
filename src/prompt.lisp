@@ -70,10 +70,11 @@
 
 (defwidget file-prompt (prompt)
   ((path
-    :initarg :path
+    :initarg :value
     :initform (namestring (user-homedir-pathname))
     :accessor file-prompt-path))
   ()
+
   (setf (prompt-completion self)
         (lambda (path)
           (let ((dir (namestring (uiop:pathname-directory-pathname path))))
