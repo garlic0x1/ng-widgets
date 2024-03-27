@@ -14,6 +14,8 @@
    :inspector-value
    :inspector-swap
    ;; prompt.lisp
+   :fuzzy-match-p
+   :completion
    :prompt
    :prompt-value
    :prompt-swap

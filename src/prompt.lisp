@@ -1,7 +1,26 @@
 (in-package :ng-widgets)
 
+(defun fuzzy-match-p (str elt &optional ignore-case)
+  (loop :with start := 0
+        :for c :across str
+        :do (let ((pos (position c elt :start start :test (if ignore-case #'char-equal #'char=))))
+              (if pos
+                  (setf start pos)
+                  (return nil)))
+        :finally (return t)))
+
+(defun completion (selection &key (test #'fuzzy-match-p))
+  (lambda (str)
+    (remove-if-not
+     (curry test str)
+     selection)))
+
 (defwidget prompt (frame)
-  ((value
+  ((message
+    :initarg :message
+    :initform nil
+    :accessor prompt-message)
+   (value
     :initarg :value
     :initform ""
     :accessor prompt-value)
@@ -13,22 +32,37 @@
     :initarg :completion
     :initform (lambda (val) (list val))
     :accessor prompt-completion))
-  ((listbox listbox
-            :grid '(0 0 :sticky :nsew :columnspan 2))
+  ((label label
+          :grid '(0 0 :sticky :nsew :columnspan 3))
+   (listbox listbox
+            :grid '(1 0 :sticky :nsew :columnspan 3))
    (entry entry
-          :grid '(1 0 :sticky :nsew)
+          :grid '(2 0 :sticky :nsew)
           :text (prompt-value self))
-   (button button
-           :grid '(1 1 :sticky :nsew)
-           :text "Ok"
-           :command (lambda () (funcall (prompt-command self) (prompt-value self)))))
+   (cancel-button button
+                  :grid '(2 2 :sticky :nsew)
+                  :text "Cancel"
+                  :command (lambda () (destroy self)))
+   (ok-button button
+              :grid '(2 1 :sticky :nsew)
+              :text "Ok"
+              :command (lambda () (funcall (prompt-command self) (prompt-value self)))))
 
-  (grid-rowconfigure self 0 :weight 1)
-  (grid-rowconfigure self 1 :minsize 32)
+  (if-let (msg (prompt-message self))
+    (setf (text (label self)) msg)
+    (grid-forget (label self)))
+
+  (grid-rowconfigure self 0 :minsize 12)
+  (grid-rowconfigure self 1 :weight 1)
+  (grid-rowconfigure self 2 :minsize 32)
   (grid-columnconfigure self 0 :weight 2)
   (grid-columnconfigure self 1 :minsize 64)
+  (grid-columnconfigure self 2 :minsize 64)
 
   (prompt-update-list self)
+  (focus (entry self))
+  (set-cursor-index (entry self) :end)
+
 
   (setf (command (listbox self))
         (lambda (indices)
@@ -37,6 +71,11 @@
                               (listbox-all-values
                                (listbox self)))))
               (prompt-swap self value)))))
+
+  (bind entry "<Escape>"
+    (lambda (e)
+      (declare (ignore e))
+      (destroy self)))
 
   (bind entry "<Tab>"
     (lambda (e)
