@@ -21,19 +21,17 @@
    (button button
            :grid '(1 1 :sticky :nsew)
            :text "Ok"
-           :command (lambda ()
-                      (funcall (prompt-command self) (prompt-value self)))))
+           :command (lambda () (funcall (prompt-command self) (prompt-value self)))))
 
   (grid-rowconfigure self 0 :weight 1)
   (grid-rowconfigure self 1 :minsize 32)
-  (grid-columnconfigure self 0 :weight 1)
-  (grid-columnconfigure self 1 :weight 1)
+  (grid-columnconfigure self 0 :weight 2)
+  (grid-columnconfigure self 1 :minsize 64)
 
   (prompt-update-list self)
 
   (setf (command (listbox self))
         (lambda (indices)
-          (setf *dbg* indices)
           (when-let ((index (car indices)))
             (let ((value (nth index
                               (listbox-all-values
@@ -71,10 +69,20 @@
                            (text (entry self)))))
 
 (defwidget file-prompt (prompt)
+  ((path
+    :initarg :path
+    :initform (namestring (user-homedir-pathname))
+    :accessor file-prompt-path))
   ()
-  ()
-  (setf (prompt-completion self) #'file-completion)
-  (prompt-update-list self)
+  (setf (prompt-completion self)
+        (lambda (path)
+          (let ((dir (namestring (uiop:pathname-directory-pathname path))))
+            (remove-if-not (curry #'str:starts-with-p path)
+                           (mapcar #'namestring
+                                   (append (uiop:subdirectories dir)
+                                           (uiop:directory-files dir)))))))
+
+  (prompt-swap self (file-prompt-path self))
 
   (bind (entry self) "<BackSpace>"
     (lambda (e)
